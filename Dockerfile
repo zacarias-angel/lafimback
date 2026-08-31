@@ -17,10 +17,12 @@ WORKDIR /var/www/html
 COPY --from=vendor /app/vendor ./vendor
 COPY . .
 COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY docker/entrypoint.sh /usr/local/bin/lafim-entrypoint
 
 RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R ug+rwx storage bootstrap/cache
+    && chmod -R ug+rwx storage bootstrap/cache \
+    && chmod +x /usr/local/bin/lafim-entrypoint
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+ENTRYPOINT ["lafim-entrypoint"]
