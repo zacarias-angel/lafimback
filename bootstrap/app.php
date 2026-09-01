@@ -12,6 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Coolify terminates HTTPS at its proxy before forwarding to this container.
+        $middleware->trustProxies(at: '*');
         $middleware->alias([
             'api.token' => \App\Http\Middleware\AuthenticateApiToken::class,
             'role' => \App\Http\Middleware\RequireRole::class,
