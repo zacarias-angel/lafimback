@@ -7,8 +7,8 @@ RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoload
 FROM php:8.2-apache
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libicu-dev libzip-dev \
-    && docker-php-ext-install intl pdo_mysql zip \
+    && apt-get install -y --no-install-recommends libicu-dev libonig-dev libxml2-dev libzip-dev \
+    && docker-php-ext-install bcmath intl mbstring pdo_mysql xml zip \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
