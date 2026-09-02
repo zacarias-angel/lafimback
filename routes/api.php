@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminResourceController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClubAdminController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\ResultController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,11 @@ Route::middleware('api.token')->group(function () {
     Route::post('matches/{match}/results/submissions', [ResultController::class, 'submit'])->middleware('role:SUPER_ADMIN,CLUB_ADMIN');
     Route::post('matches/{match}/results/confirm', [ResultController::class, 'confirm'])->middleware('role:SUPER_ADMIN,CLUB_ADMIN');
     Route::post('matches/{match}/results/validate', [ResultController::class, 'validateResult'])->middleware('role:SUPER_ADMIN');
+    Route::prefix('club-admin')->middleware('role:CLUB_ADMIN')->group(function () {
+        Route::get('dashboard', [ClubAdminController::class, 'dashboard']);
+        Route::patch('clubs/{club}', [ClubAdminController::class, 'updateClub'])->middleware('club.access:club');
+        Route::post('clubs/{club}/players', [ClubAdminController::class, 'storePlayer'])->middleware('club.access:club');
+    });
     Route::prefix('admin')->middleware('role:SUPER_ADMIN')->group(function () {
         Route::get('roles', [AdminUserController::class, 'roles']);
         Route::get('users', [AdminUserController::class, 'index']);
