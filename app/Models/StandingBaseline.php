@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StandingBaseline extends Model
 {
+    protected $table = 'standings_baselines';
+
     protected $guarded = [];
 
     public function tournament(): BelongsTo
