@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Club;
+use App\Models\Category;
 use App\Models\MatchGame;
 use App\Models\News;
 use App\Models\Player;
@@ -69,5 +70,6 @@ class PublicController extends Controller
     public function spanishNews(Request $request) { return $this->news($request)->through(fn (News $news) => $this->spanishNewsData($news)); }
     public function spanishNewsShow(News $news) { return $this->spanishNewsData($this->newsShow($news)); }
     public function spanishStandings(Request $request, $category) { $data = $this->standingsData(Tournament::query()->where('status', 'ACTIVE')->firstOrFail(), $category); return response()->json(['data' => array_map(fn ($row, $index) => ['posicion' => $index + 1, 'club' => $row['club_name'], 'puntos' => $row['points'], 'pj' => $row['played'], 'pg' => $row['won'], 'pe' => $row['drawn'], 'pp' => $row['lost'], 'gf' => $row['goals_for'], 'gc' => $row['goals_against'], 'dg' => $row['goal_difference']], $data['standings'], array_keys($data['standings']))]); }
+    public function spanishPodiums() { $tournament = Tournament::query()->where('status', 'ACTIVE')->firstOrFail(); return response()->json(['data' => $tournament->categories()->where('is_active', true)->orderBy('sort_order')->get(['categories.id', 'categories.name'])->map(function (Category $category) use ($tournament) { $rows = $this->standingsData($tournament, $category->id)['standings']; return ['categoria' => $category->name, 'podio' => array_map(fn ($row, $index) => ['posicion' => $index + 1, 'club' => $row['club_name'], 'puntos' => $row['points']], array_slice($rows, 0, 3), array_keys(array_slice($rows, 0, 3)))]; })]); }
     private function spanishNewsData(News $news): array { return ['id' => $news->id, 'slug' => $news->slug, 'titulo' => $news->title, 'resumen' => $news->summary, 'contenido' => $news->body, 'tipo' => $news->type, 'publicada_en' => $news->published_at?->toIso8601String()]; }
 }

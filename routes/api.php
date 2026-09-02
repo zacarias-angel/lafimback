@@ -25,6 +25,7 @@ Route::get('jugadores', [PublicController::class, 'spanishPlayers']);
 Route::get('noticias', [PublicController::class, 'spanishNews']);
 Route::get('noticias/{news:slug}', [PublicController::class, 'spanishNewsShow']);
 Route::get('posiciones/{category}', [PublicController::class, 'spanishStandings']);
+Route::get('podios', [PublicController::class, 'spanishPodiums']);
 
 Route::middleware('api.token')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me']);
