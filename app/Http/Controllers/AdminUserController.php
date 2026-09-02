@@ -27,6 +27,11 @@ class AdminUserController extends Controller
             ->paginate($data['per_page'] ?? 20);
     }
 
+    public function roles()
+    {
+        return Role::query()->whereIn('name', self::MANAGEABLE_ROLES)->orderBy('name')->get(['id', 'name']);
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate($this->rules());

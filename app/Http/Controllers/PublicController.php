@@ -56,6 +56,7 @@ class PublicController extends Controller
     public function club(Club $club) { return $club->load(['players.player']); }
     public function players(Request $request) { return Player::query()->where('is_active', true)->with('clubAssignments')->orderBy('last_name')->paginate($request->integer('per_page', 20)); }
     public function news(Request $request) { return News::query()->where('status', 'PUBLISHED')->where('published_at', '<=', now())->with('author:id,name')->latest('published_at')->paginate($request->integer('per_page', 20)); }
+    public function newsShow(News $news) { abort_unless($news->status === 'PUBLISHED' && $news->published_at?->lte(now()), 404); return $news->load('author:id,name'); }
 
     public function spanishMatches(Request $request, string $scope)
     {
@@ -65,6 +66,8 @@ class PublicController extends Controller
     public function spanishClubs(Request $request) { return $this->clubs($request)->through(fn (Club $club) => ['id' => $club->id, 'nombre' => $club->name, 'descripcion' => $club->description, 'escudo_url' => $club->logo_url]); }
     public function spanishClub(Club $club) { return ['id' => $club->id, 'nombre' => $club->name, 'descripcion' => $club->description, 'escudo_url' => $club->logo_url]; }
     public function spanishPlayers(Request $request) { return $this->players($request)->through(fn (Player $player) => ['id' => $player->id, 'nombre' => $player->first_name, 'apellido' => $player->last_name, 'posicion' => $player->position, 'numero' => $player->shirt_number]); }
-    public function spanishNews(Request $request) { return $this->news($request)->through(fn (News $news) => ['id' => $news->id, 'titulo' => $news->title, 'resumen' => $news->summary, 'contenido' => $news->body, 'tipo' => $news->type, 'publicada_en' => $news->published_at?->toIso8601String()]); }
+    public function spanishNews(Request $request) { return $this->news($request)->through(fn (News $news) => $this->spanishNewsData($news)); }
+    public function spanishNewsShow(News $news) { return $this->spanishNewsData($this->newsShow($news)); }
     public function spanishStandings(Request $request, $category) { $data = $this->standingsData(Tournament::query()->where('status', 'ACTIVE')->firstOrFail(), $category); return response()->json(['data' => array_map(fn ($row, $index) => ['posicion' => $index + 1, 'club' => $row['club_name'], 'puntos' => $row['points'], 'pj' => $row['played'], 'pg' => $row['won'], 'pe' => $row['drawn'], 'pp' => $row['lost'], 'gf' => $row['goals_for'], 'gc' => $row['goals_against'], 'dg' => $row['goal_difference']], $data['standings'], array_keys($data['standings']))]); }
+    private function spanishNewsData(News $news): array { return ['id' => $news->id, 'slug' => $news->slug, 'titulo' => $news->title, 'resumen' => $news->summary, 'contenido' => $news->body, 'tipo' => $news->type, 'publicada_en' => $news->published_at?->toIso8601String()]; }
 }

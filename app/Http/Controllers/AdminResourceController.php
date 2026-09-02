@@ -27,6 +27,7 @@ class AdminResourceController extends Controller
     {
         $data = $request->validate($this->rules($resource));
         if ($resource === 'news') $data['author_id'] = $request->user()->id;
+        if ($resource === 'news' && $data['status'] === 'PUBLISHED' && empty($data['published_at'])) $data['published_at'] = now();
         $model = $this->model($resource)::create($data);
         $this->audit($request, 'CREATE', $model, null, $model->getAttributes());
         return response()->json($model, 201);
