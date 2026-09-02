@@ -24,6 +24,7 @@ Route::get('clubes/{club}', [PublicController::class, 'spanishClub']);
 Route::get('jugadores', [PublicController::class, 'spanishPlayers']);
 Route::get('noticias', [PublicController::class, 'spanishNews']);
 Route::get('noticias/{news:slug}', [PublicController::class, 'spanishNewsShow']);
+Route::get('posiciones', [PublicController::class, 'spanishAllStandings']);
 Route::get('posiciones/{category}', [PublicController::class, 'spanishStandings']);
 Route::get('podios', [PublicController::class, 'spanishPodiums']);
 
