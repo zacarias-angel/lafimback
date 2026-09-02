@@ -6,7 +6,7 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\ResultController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:login');
+Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::get('matches/{scope}', [PublicController::class, 'matches'])->whereIn('scope', ['upcoming', 'today', 'completed']);
 Route::get('standings/{tournament}/{category}', [PublicController::class, 'standings']);
 Route::get('standings/{category}', [PublicController::class, 'currentStandings']);
