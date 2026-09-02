@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminResourceController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\ResultController;
@@ -29,6 +30,11 @@ Route::middleware('api.token')->group(function () {
     Route::post('matches/{match}/results/confirm', [ResultController::class, 'confirm'])->middleware('role:SUPER_ADMIN,CLUB_ADMIN');
     Route::post('matches/{match}/results/validate', [ResultController::class, 'validateResult'])->middleware('role:SUPER_ADMIN');
     Route::prefix('admin')->middleware('role:SUPER_ADMIN')->group(function () {
+        Route::get('users', [AdminUserController::class, 'index']);
+        Route::post('users', [AdminUserController::class, 'store']);
+        Route::get('users/{id}', [AdminUserController::class, 'show']);
+        Route::match(['put', 'patch'], 'users/{id}', [AdminUserController::class, 'update']);
+        Route::delete('users/{id}', [AdminUserController::class, 'destroy']);
         Route::get('{resource}', [AdminResourceController::class, 'index']);
         Route::post('{resource}', [AdminResourceController::class, 'store']);
         Route::get('{resource}/{id}', [AdminResourceController::class, 'show']);
